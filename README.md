@@ -7,9 +7,9 @@
 
 next steps:
 
-- add connection to free remote relational db instance (render) :white_check_mark:
-- add prisma :white_check_mark: https://www.prisma.io/docs/orm/overview/introduction/what-is-prisma
-- add models
+- add connection to free remote relational db instance (aiven) :white_check_mark:
+- add [prisma](https://www.prisma.io/docs/orm/overview/introduction/what-is-prisma) :white_check_mark:
+- add models using the design from this [project](https://www.frontendmentor.io/challenges/interactive-comments-section-iG1RugEG9)
 - add data to db (remote?)
 - add routes
 - test them (insomnia?)
