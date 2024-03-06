@@ -10,5 +10,7 @@ next steps:
 - add connection to free remote relational db instance (render) :white_check_mark:
 - add prisma :white_check_mark: https://www.prisma.io/docs/orm/overview/introduction/what-is-prisma
 - add models
+- add data to db (remote?)
 - add routes
-- test them
+- test them (insomnia?)
+- add docker
