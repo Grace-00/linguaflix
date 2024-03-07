@@ -12,3 +12,26 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  username  String    @unique
+  Comment   Comment[]
+  like      Int
+  image     String 
+}
+
+model Comment {
+  // id field that is a number and automatically increments after its used
+  id        Int      @id @default(autoincrement())
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // optional
+  content   String?
+  published Boolean  @default(false)
+  // relation to another model
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+}
