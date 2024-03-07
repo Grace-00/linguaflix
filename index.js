@@ -4,21 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const router_1 = __importDefault(require("./router"));
 const app = (0, express_1.default)();
 const port = 3000;
-const cats = [
-    {
-        name: "fru",
-        age: 3,
-    },
-    {
-        name: "simba",
-        age: 1,
-    },
-];
-app.get("/", (req, res) => {
-    res.send(cats);
-});
+app.use("/api", router_1.default); //this is used to create modular routes
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 });
