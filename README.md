@@ -14,3 +14,8 @@ next steps:
 - add routes (GET!)
 - test them (insomnia?) there's this cool vs code extension called thunder client :cool:
 - add docker
+
+Questions so far:
+
+- why am i getting undefined if i update the values within the POST route with req.body.whatever?
+- understanding relation within Prisma and DB: how do i update a model or create a new one without deleting the DB every time i make a change? deep dive into migrations.
