@@ -42,8 +42,8 @@ model Comment {
   published Boolean  @default(false)
   score     Int
   // relation to another model
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
+  user      User?     @relation(fields: [userId], references: [id])
+  userId    String?
   replies   Reply[]
 }
 

@@ -1,13 +1,12 @@
-import { Comment } from "../../types";
+import { Comment } from '../../types'
+import CommentForm from './CommetForm';
+
 
 async function fetchComments(): Promise<Comment[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/`, {
+    cache: "no-store",
+  });
 
-  if (!apiUrl) {
-    throw new Error("API URL is not defined. Please check your environment variables.");
-  }
-
-  const response = await fetch(apiUrl, { cache: 'no-store' }); // cache: 'no-store' ensures no stale data
   if (!response.ok) {
     throw new Error("Failed to fetch comments");
   }
@@ -15,17 +14,26 @@ async function fetchComments(): Promise<Comment[]> {
   return response.json();
 }
 
-export default async function Home() {
+export default async function HomePage() {
   const comments = await fetchComments();
 
   return (
     <div>
-      {comments.map((comment) => (
-        <div key={comment.id}>
-          <h4>{comment.user.username}</h4>
-          <p>{comment.content}</p>
-        </div>
-      ))}
+      <h1>Comments</h1>
+
+      {comments.length === 0 ? (
+        <p>No comments yet</p>
+      ) : (
+        comments.map((comment) => (
+          <div key={comment.id}>
+            <h4>{comment?.user?.username}</h4>
+            <p>{comment.content}</p>
+          </div>
+        ))
+      )}
+
+
+      <CommentForm />
     </div>
   );
 }
