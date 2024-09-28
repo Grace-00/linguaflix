@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { comments } from "./types";
+import { comments } from "../types";
 import { uuid } from "uuidv4";
 
 const router = Router();
