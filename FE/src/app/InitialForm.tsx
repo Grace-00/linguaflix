@@ -103,10 +103,10 @@ export function InitialForm() {
             });
 
             if (!response.ok) {
-                console.error("Error:", response.statusText);
+                const errorDetail = await response.json();
+                console.error(`Error ${response.status}: ${errorDetail.error}`);
+                return;
             }
-            const result = await response.json();
-            console.log("Success:", result);
         } catch (error) {
             console.error("An error occurred:", error);
         }

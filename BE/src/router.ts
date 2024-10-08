@@ -64,6 +64,12 @@ router.post("/submit-data", async (req: Request, res: Response) => {
 
     const filePath = SHOW_FILE_PATH[favoriteShow];
 
+    if (!filePath) {
+      return res.status(404).json({
+        error:
+          "Subtitle not found because there's no file path associated to it",
+      });
+    }
     // Fetch subtitle based on favoriteShow TODO: implement proficiencyLevel
     const sentence = await getBeginnerSentence(filePath);
 
