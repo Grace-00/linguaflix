@@ -16,6 +16,12 @@ const SHOW_FILE_PATH: ShowFilePath = {
   "9-1-1": "../subtitles/9-1-1-s01e01.srt",
 };
 
+router.get("/", (req: Request, res: Response) => {
+  res
+    .status(404)
+    .json({ message: "heeelllooooo server! This API has not been found." });
+});
+
 router.post("/submit-data", async (req: Request, res: Response) => {
   try {
     const {
