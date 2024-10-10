@@ -16,7 +16,7 @@ if (stage === "production") {
 const defaultConfig = {
   stage,
   dbUrl: process.env.DATABASE_URL,
-  port: 5001,
+  port: process.env.PORT,
   logging: false,
 };
 
