@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import axios from "axios"
+import { apiUrl } from "./utils"
 
 
 const formSchema = z.object({
@@ -94,7 +95,7 @@ export function InitialForm() {
 
     const onSubmit = async (data: FormData) => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/submit-data`, {
+            const response = await fetch(`${apiUrl}/submit-data`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
