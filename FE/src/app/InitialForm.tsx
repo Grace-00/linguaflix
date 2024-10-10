@@ -94,6 +94,7 @@ export function InitialForm() {
     }
 
     const onSubmit = async (data: FormData) => {
+        console.log('API URL IS: ', apiUrl)
         try {
             const response = await fetch(`${apiUrl}/submit-data`, {
                 method: 'POST',
