@@ -1,4 +1,4 @@
-## Linguaflix 🚀
+## Linguaflix 🚀 - ongoing project
 
 Tech stack: Next.js, React, Tailwind, Shadcn/ui, Prisma, Node, MySQL
 
@@ -13,3 +13,7 @@ How to start this project locally
 - cd BE
 - cd FE
 - npm run dev within both folders
+
+How to play around with it
+
+Check out this link [linguaflix](https://linguaflix.vercel.app/)
