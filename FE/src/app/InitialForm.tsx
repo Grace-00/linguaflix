@@ -74,7 +74,7 @@ export function InitialForm() {
     const [shows, setShows] = useState<TVShow[]>([])
     const [loading, setLoading] = useState(false)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [showSorryMessage, setShowSorryMessage] = useState(false)
+    const [feedback, setFeedback] = useState({ message: '', type: '' });
 
     const fetchShows = async (query: string) => {
         if (query.length === 0) {
@@ -110,11 +110,15 @@ export function InitialForm() {
             if (!response.ok) {
                 const errorDetail = await response.json();
                 if (errorDetail.error.includes('no found')) {
-                    setShowSorryMessage(true)
+                    setFeedback({ message: 'Sorry, this show has no subtitles available for now.', type: 'error' })
                 }
                 console.error(`Error ${response.status}: ${errorDetail.error}`);
                 return;
             }
+            setFeedback({
+                message: "Request submitted successfully!",
+                type: "success",
+            });
         } catch (error) {
             console.error("An error occurred:", error);
         }
@@ -210,7 +214,7 @@ export function InitialForm() {
                                             onChange={(e) => {
                                                 field.onChange(e)
                                                 fetchShows(e.target.value)
-                                                setShowSorryMessage(false)
+                                                setFeedback({ message: '', type: '' });
                                             }}
                                             onFocus={() => setIsDropdownOpen(true)}
                                         />
@@ -230,7 +234,7 @@ export function InitialForm() {
                                             ))}
                                         </ul>
                                     )}
-                                    {showSorryMessage && <p>Sorry, this show has no subtitles available for now.</p>}
+                                    {(feedback.type === 'error' || feedback.type === 'success') && <p>{feedback.message}</p>}
                                 </FormItem>
                             )}
                         />
