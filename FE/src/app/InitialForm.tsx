@@ -109,7 +109,9 @@ export function InitialForm() {
 
             if (!response.ok) {
                 const errorDetail = await response.json();
-                setShowSorryMessage(true)
+                if (errorDetail.error.includes('not found')) {
+                    setShowSorryMessage(true)
+                }
                 console.error(`Error ${response.status}: ${errorDetail.error}`);
                 return;
             }
