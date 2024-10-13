@@ -113,12 +113,12 @@ export function InitialForm() {
                     setFeedback({ message: 'Sorry, this show has no subtitles available for now.', type: 'error' })
                 }
                 console.error(`Error ${response.status}: ${errorDetail.error}`);
-                return;
+            } else {
+                setFeedback({
+                    message: "Request submitted successfully!",
+                    type: "success",
+                });
             }
-            setFeedback({
-                message: "Request submitted successfully!",
-                type: "success",
-            });
         } catch (error) {
             console.error("An error occurred:", error);
         }
