@@ -115,7 +115,7 @@ export function InitialForm() {
                 console.error(`Error ${response.status}: ${errorDetail.error}`);
             } else {
                 setFeedback({
-                    message: "Request submitted successfully!",
+                    message: "Request submitted successfully! Check your email!",
                     type: "success",
                 });
             }
