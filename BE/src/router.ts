@@ -2,9 +2,14 @@ import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { getBeginnerSentence } from "./utils.js";
 import { sendEmail } from "./mailjet.js";
+import fs from "fs/promises";
+import { __filename, __dirname } from "./utils.js";
+import path from "path";
 
 const prisma = new PrismaClient();
 const router = Router();
+
+const subtitlesFolder = path.join(__dirname, "../subtitles");
 
 type ShowFilePath = {
   [showName: string]: string;
@@ -15,6 +20,28 @@ const SHOW_FILE_PATH: ShowFilePath = {
   "Station 19": "../subtitles/station-19-s07e01.srt",
   "9-1-1": "../subtitles/9-1-1-s01e01.srt",
 };
+
+router.get("/subtitles", async (req: Request, res: Response) => {
+  try {
+    const subtitleFiles = await fs.readdir(subtitlesFolder);
+    const subtitles = subtitleFiles.map((file) => ({
+      name: file
+        .replace(".srt", "")
+        .replace(/-/g, " ")
+        .replace(/s\d{2}/i, "") // Remove 's01', 's02', etc.
+        .replace(/e\d{2}/i, "") // Remove 'e01', 'e02', etc.
+        .trim() // Remove leading/trailing whitespace
+        .toLowerCase(),
+
+      fileName: file,
+    }));
+
+    res.json(subtitles);
+  } catch (error) {
+    console.error("Error fetching subtitles:", error);
+    res.status(500).send("Error fetching subtitles");
+  }
+});
 
 router.get("/", (req: Request, res: Response) => {
   res

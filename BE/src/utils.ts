@@ -6,8 +6,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 // Helper to get the directory name in ES module context
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+export const __filename = fileURLToPath(import.meta.url);
+export const __dirname = path.dirname(__filename);
 
 // Helper to resolve the absolute path
 const getFilePath = (relativePath: string): string => {

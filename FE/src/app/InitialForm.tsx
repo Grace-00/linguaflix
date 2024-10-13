@@ -74,18 +74,22 @@ export function InitialForm() {
     const [shows, setShows] = useState<TVShow[]>([])
     const [loading, setLoading] = useState(false)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [showSorryMessage, setShowSorryMessage] = useState(false)
 
     const fetchShows = async (query: string) => {
-        if (query.length < 1) return
+        if (query.length === 0) {
+            setShows([]);
+            return;
+        }
+
         try {
             const response = await axios.get(`/api/searchShows`, {
                 params: { query },
             });
 
-            const fetchedShows = response.data.results.map((tvshow: TVShowDropdown) => ({ name: tvshow.name, id: tvshow.id, popularity: tvshow.popularity }))
+            const fetchedShowsWithSubtitles = response.data.map((tvshow: TVShowDropdown) => ({ name: tvshow.name, id: tvshow.id, popularity: tvshow.popularity }))
 
-            setShows(fetchedShows);
-            //setShows(fetchedShows)
+            setShows(fetchedShowsWithSubtitles);
         } catch (error) {
             console.error("Error fetching shows:", error)
         } finally {
@@ -94,7 +98,6 @@ export function InitialForm() {
     }
 
     const onSubmit = async (data: FormData) => {
-
         try {
             const response = await fetch(`${apiUrl}/submit-data`, {
                 method: 'POST',
@@ -106,14 +109,16 @@ export function InitialForm() {
 
             if (!response.ok) {
                 const errorDetail = await response.json();
+                setShowSorryMessage(true)
                 console.error(`Error ${response.status}: ${errorDetail.error}`);
                 return;
             }
+
+
         } catch (error) {
             console.error("An error occurred:", error);
         }
     };
-
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -183,10 +188,8 @@ export function InitialForm() {
                                     <FormLabel>Proficiency Level</FormLabel>
                                     <FormControl>
                                         <select {...field}>
-                                            <option value="">Select your level</option>
                                             <option value="beginner">Beginner</option>
                                             <option value="intermediate">Intermediate</option>
-                                            <option value="advanced">Advanced</option>
                                         </select>
                                     </FormControl>
                                     <FormMessage />
@@ -226,6 +229,7 @@ export function InitialForm() {
                                             ))}
                                         </ul>
                                     )}
+                                    {showSorryMessage && <p>Sorry, this show has no subtitles available for now.</p>}
                                 </FormItem>
                             )}
                         />
