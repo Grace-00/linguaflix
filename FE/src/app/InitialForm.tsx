@@ -210,6 +210,7 @@ export function InitialForm() {
                                             onChange={(e) => {
                                                 field.onChange(e)
                                                 fetchShows(e.target.value)
+                                                setShowSorryMessage(false)
                                             }}
                                             onFocus={() => setIsDropdownOpen(true)}
                                         />
