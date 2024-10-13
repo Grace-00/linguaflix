@@ -109,7 +109,7 @@ export function InitialForm() {
 
             if (!response.ok) {
                 const errorDetail = await response.json();
-                if (errorDetail.error.includes('no found')) {
+                if (errorDetail.error.includes('no found') || errorDetail.error.includes('not found')) {
                     setFeedback({ message: 'Sorry, this show has no subtitles available for now.', type: 'error' })
                 }
                 console.error(`Error ${response.status}: ${errorDetail.error}`);
@@ -213,6 +213,7 @@ export function InitialForm() {
                                             {...field}
                                             onChange={(e) => {
                                                 field.onChange(e)
+                                                //TODO: improve for performance
                                                 fetchShows(e.target.value)
                                                 setFeedback({ message: '', type: '' });
                                             }}

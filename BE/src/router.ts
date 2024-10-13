@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { getBeginnerSentence } from "./utils.js";
+import { getSentence } from "./utils.js";
 import { sendEmail } from "./mailjet.js";
 import fs from "fs/promises";
 import { __filename, __dirname } from "./utils.js";
@@ -148,8 +148,12 @@ router.post("/submit-data", async (req: Request, res: Response) => {
       }
     }
 
-    // Fetch subtitle based on favoriteShow TODO: implement proficiencyLevel
-    const sentence = await getBeginnerSentence(filePath);
+    // Fetch subtitle based on favoriteShow TODO: implement different target language
+    const sentence = await getSentence(
+      filePath,
+      proficiencyLevel,
+      targetLanguage
+    );
 
     if (!sentence) {
       return res.status(404).json({ error: "Subtitle not found" });
