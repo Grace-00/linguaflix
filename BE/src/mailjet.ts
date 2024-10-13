@@ -14,7 +14,7 @@ export const sendEmail = async (to: string, subject: string, text: string) => {
         {
           From: {
             Email: process.env.MAILJET_SENDER,
-            Name: "Language Learning App",
+            Name: "Linguaflix",
           },
           To: [
             {

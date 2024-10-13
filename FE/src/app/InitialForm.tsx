@@ -99,7 +99,7 @@ export function InitialForm() {
 
     const onSubmit = async (data: FormData) => {
         try {
-            const response = await fetch(`${apiUrl}/submit-data`, {
+            const response: Response = await fetch(`${apiUrl}/submit-data`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -109,14 +109,12 @@ export function InitialForm() {
 
             if (!response.ok) {
                 const errorDetail = await response.json();
-                if (errorDetail.error.includes('not found')) {
+                if (errorDetail.error.includes('no found')) {
                     setShowSorryMessage(true)
                 }
                 console.error(`Error ${response.status}: ${errorDetail.error}`);
                 return;
             }
-
-
         } catch (error) {
             console.error("An error occurred:", error);
         }

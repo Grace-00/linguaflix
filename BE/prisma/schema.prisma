@@ -14,15 +14,24 @@ datasource db {
 }
 
 model User {
-  id               Int      @id @default(autoincrement())
+  id               Int            @id @default(autoincrement())
   name             String
-  email            String   @unique
+  email            String         @unique
   nativeLanguage   String
   targetLanguage   String
   proficiencyLevel String
   favoriteShow     String
-  createdAt        DateTime @default(now())
+  createdAt        DateTime       @default(now())
   sentences        Sentence[]
+  FavoriteShow     FavoriteShow[]
+}
+
+model FavoriteShow {
+  id        Int      @id @default(autoincrement())
+  showName  String
+  userId    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Sentence {
@@ -32,4 +41,3 @@ model Sentence {
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 }
-
