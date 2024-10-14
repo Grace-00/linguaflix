@@ -1,8 +1,8 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { SubmitHandler, useForm } from "react-hook-form"
+
 
 import { Button } from "@/components/ui/button"
 import {
@@ -14,49 +14,12 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import axios from "axios"
 import { apiUrl } from "./utils"
+import { useDebounce } from "./useDebounce"
+import { formSchema, TVShow, TVShowDropdown, FormDataTVShow } from "./types"
 
-
-const formSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    email: z.string().email("Invalid email format"),
-    nativeLanguage: z.string().min(1, "Native language is required"),
-    targetLanguage: z.string().min(1, "Target language is required"),
-    proficiencyLevel: z.enum(["beginner", "intermediate", "advanced"], {
-        required_error: "Proficiency level is required",
-    }),
-    favoriteShow: z.string().min(1, "Favorite show is required"),
-});
-
-export type TVShow = {
-    adult: boolean;
-    backdrop_path: string;
-    first_air_date: string;
-    genre_ids: number[];
-    id: number;
-    name: string;
-    origin_country: string[];
-    original_language: string;
-    original_name: string;
-    overview: string;
-    popularity: number;
-    poster_path: string;
-    vote_average: number;
-    vote_count: number;
-};
-
-type TVShowDropdown = Pick<TVShow, 'id' | 'name' | 'popularity'>
-
-type FormData = {
-    name: string;
-    email: string;
-    nativeLanguage: string;
-    targetLanguage: string;
-    proficiencyLevel: string;
-    favoriteShow: string;
-}
 
 export function InitialForm() {
     const form = useForm({
@@ -72,9 +35,10 @@ export function InitialForm() {
     });
 
     const [shows, setShows] = useState<TVShow[]>([])
-    const [loading, setLoading] = useState(false)
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [feedback, setFeedback] = useState({ message: '', type: '' });
+    const [inputValue, setInputValue] = useState('');
+
+    const debouncedInputValue = useDebounce(inputValue, 500);
 
     const fetchShows = async (query: string) => {
         if (query.length === 0) {
@@ -92,12 +56,14 @@ export function InitialForm() {
             setShows(fetchedShowsWithSubtitles);
         } catch (error) {
             console.error("Error fetching shows:", error)
-        } finally {
-            setLoading(false)
         }
     }
 
-    const onSubmit = async (data: FormData) => {
+    useEffect(() => {
+        fetchShows(debouncedInputValue);
+    }, [debouncedInputValue])
+
+    const onSubmit: SubmitHandler<FormDataTVShow> = async (data) => {
         try {
             const response: Response = await fetch(`${apiUrl}/submit-data`, {
                 method: 'POST',
@@ -109,7 +75,7 @@ export function InitialForm() {
 
             if (!response.ok) {
                 const errorDetail = await response.json();
-                if (errorDetail.error.includes('no found')) {
+                if (errorDetail.error.includes('no found') || errorDetail.error.includes('not found')) {
                     setFeedback({ message: 'Sorry, this show has no subtitles available for now.', type: 'error' })
                 }
                 console.error(`Error ${response.status}: ${errorDetail.error}`);
@@ -213,21 +179,18 @@ export function InitialForm() {
                                             {...field}
                                             onChange={(e) => {
                                                 field.onChange(e)
-                                                fetchShows(e.target.value)
+                                                setInputValue(e.target.value);
                                                 setFeedback({ message: '', type: '' });
                                             }}
-                                            onFocus={() => setIsDropdownOpen(true)}
                                         />
                                     </FormControl>
                                     <FormMessage />
-                                    {loading && <p>Loading...</p>}
-                                    {isDropdownOpen && shows.length > 0 && (
+                                    {shows.length > 0 && (
                                         <ul className="absolute z-10 bg-white border border-gray-300 rounded-md max-h-20 md:max-h-32 overflow-y-auto w-fit">
                                             {shows.map((show) => (
                                                 <li key={show.id} className="p-2 cursor-pointer hover:bg-gray-100" onClick={() => {
                                                     field.onChange(show.name);
                                                     setShows([]);
-                                                    setIsDropdownOpen(false);
                                                 }}>
                                                     {show.name}
                                                 </li>

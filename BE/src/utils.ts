@@ -4,6 +4,7 @@ import natural from "natural";
 import SrtParser from "srt-parser-2";
 import path from "path";
 import { fileURLToPath } from "url";
+import italianPlugin from "./italian-plugin.js";
 
 // Helper to get the directory name in ES module context
 export const __filename = fileURLToPath(import.meta.url);
@@ -109,21 +110,104 @@ const extractSentences = (cleanedText: string): string[] => {
 };
 
 // Helper function to filter beginner-level sentences
-const filterBeginnerSentences = (sentences: string[]): string[] => {
-  return sentences.filter(isBeginnerLevelSentence);
+const filterBeginnerSentences = (
+  sentences: string[],
+  targetLanguage: string
+): string[] => {
+  return sentences.filter(isBeginnerLevelSentence, targetLanguage);
+};
+
+const filterIntermediateSentences = (
+  sentences: string[],
+  targetLanguage: string
+): string[] => {
+  return sentences.filter((sentence) =>
+    isIntermediateLevelSentence(sentence, targetLanguage)
+  );
+};
+
+const isIntermediateLevelSentence = (
+  sentence: string,
+  targetLanguage: string
+): boolean => {
+  const wordTokenizer = new natural.WordTokenizer();
+  const words = wordTokenizer.tokenize(sentence);
+
+  const minLength = 9; // Minimum words for an intermediate sentence
+  const maxLength = 15; // Maximum words for an intermediate sentence
+  const maxComplexWords = 4; // Maximum complex words allowed
+
+  let nouns: string[] = [];
+  let verbs: string[] = [];
+  let complements: string[] = [];
+  let conjunctions: string[] = [];
+  if (words.length < minLength || words.length > maxLength) return false;
+
+  // Extend the NLP library with the Italian plugin
+  nlp.extend({ methods: italianPlugin });
+
+  // Check for complex words
+  const complexWordCount = words.filter((word) => word.length > 6).length;
+
+  if (complexWordCount > maxComplexWords) return false;
+
+  // Check for nouns, verbs, complements, and conjunctions
+  const sentenceDoc = nlp(sentence);
+  if (targetLanguage !== "italian") {
+    nouns = sentenceDoc.nouns().out("array");
+    verbs = sentenceDoc.verbs().out("array");
+    complements = sentenceDoc
+      .adjectives()
+      .out("array")
+      .concat(sentenceDoc.adverbs().out("array"));
+    conjunctions = sentenceDoc.conjunctions().out("array");
+  } else {
+    //Use italianPlugin if targetLanguage is Italian (added because compromise couldn't determine complexity for intermediate italian)
+    nouns = words.filter((word) => italianPlugin.methods.isNoun(word));
+    verbs = words.filter((word) => italianPlugin.methods.isVerb(word));
+    complements = words.filter((word) =>
+      italianPlugin.methods.isComplement(word)
+    );
+    conjunctions = words.filter((word) =>
+      italianPlugin.methods.isConjunction(word)
+    );
+  }
+
+  const POSValueForIntermediateLevel =
+    nouns.length > 0 &&
+    verbs.length > 0 &&
+    complements.length > 0 &&
+    conjunctions.length > 0;
+
+  return POSValueForIntermediateLevel;
 };
 
 // Main function to extract a beginner sentence
 //TODO: optimise for proficiency level
-export const getBeginnerSentence = async (
-  filePath: string
+export const getSentence = async (
+  filePath: string,
+  proficiencyLevel: string,
+  targetLanguage: string
 ): Promise<string | null> => {
   const fileContent = readSrtFile(filePath);
   const srtData = parseSrtData(fileContent);
   const cleanedSubtitleText = cleanSubtitleText(srtData);
   const sentences = extractSentences(cleanedSubtitleText);
-  const beginnerSentences = filterBeginnerSentences(sentences);
-  const randomizedSentences = shuffleArray(beginnerSentences);
+
+  let filteredSentences: string[] = [];
+  switch (proficiencyLevel) {
+    case "beginner":
+      filteredSentences = filterBeginnerSentences(sentences, targetLanguage);
+      break;
+    case "intermediate":
+      filteredSentences = filterIntermediateSentences(
+        sentences,
+        targetLanguage
+      );
+      break;
+  }
+
+  const randomizedSentences = shuffleArray(filteredSentences);
 
   // Return the first matching beginner sentence (or null if none found)
   return randomizedSentences.length > 0 ? randomizedSentences[0] : null;
