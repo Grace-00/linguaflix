@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   if (!TMDB_API_KEY) {
     return NextResponse.json({ error: "API key is missing" }, { status: 500 });
   }
-  console.log("TMDB_API_KEY:", TMDB_API_KEY);
+
   try {
     const response = await axios.get(`https://api.themoviedb.org/3/search/tv`, {
       params: {
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
         query,
       },
     });
-    console.log(response.data.results);
+
     return NextResponse.json(response.data.results);
   } catch (error) {
     console.error("Error fetching from TMDB:", error);
