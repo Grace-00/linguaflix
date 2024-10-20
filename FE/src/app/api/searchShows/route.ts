@@ -17,8 +17,11 @@ export async function GET(request: Request) {
   try {
     const response = await axios.get(`https://api.themoviedb.org/3/search/tv`, {
       params: {
-        api_key: TMDB_API_KEY,
         query,
+      },
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${TMDB_API_KEY}`,
       },
     });
 
